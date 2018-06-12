@@ -48,6 +48,16 @@ methods.forEach( (method) => {
 
 router.route = (req,res) => {
 
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Request-Methods', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', '*');
+  if(req.method==='OPTIONS') {
+    res.writeHead(200);
+    res.end();
+    return;
+  }
+
   return parser(req)
     .then(req => {
       // Determine which of the things in the routing table matches us
@@ -57,6 +67,8 @@ router.route = (req,res) => {
       // If we have one, run the function contained within
       if (handler) {
         return handler(req,res);
+      } else {
+        throw new Error('no handler here');
       }
     })
     // Otherwise, bug out with an error
