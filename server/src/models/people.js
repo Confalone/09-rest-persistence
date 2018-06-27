@@ -5,21 +5,21 @@
 const storage = require('../lib/storage/data-store.js');
 const uuid = require('uuid/v1');
 
-class Note{
+class People{
 
   /**
-   * Simple constructor function for our note model
+   * Simple constructor function for our people model
    * @param config
    */
   constructor(config) {
     this.id = uuid();
     this.createdOn = new Date();
-    this.title = config && config.title || '';
-    this.content = config && config.content || '';
+    this.name = config && config.title || '';
+    this.address = config && config.address || '';
   }
 
   /**
-   * Save an instance of a note
+   * Save an instance of a people
    * Note that it calls on our external storage mechanism to do this operation
    * @returns {*}
    */
@@ -32,11 +32,11 @@ class Note{
    * Simply put, that means that you can't use them on instances of this model, but
    * rather use them as top level functions.
    * i.e.
-   *    This will use the instance method "save" to save the note we just created
-   *    let myNote = new Note({title:'Hi',content:'There'});
+   *    This will use the instance method "save" to save the people we just created
+   *    let myNote = new Note({title:'Hi',address:'There'});
    *    myNote.save();
    *
-   *    To view a single note you would call the method on the constructor istelf:
+   *    To view a single people you would call the method on the constructor istelf:
    *    Note.fetchOne(id)
    *
    * Note that all of the below methods contain calls on our external storage mechanism
@@ -62,4 +62,4 @@ class Note{
 
 }
 
-module.exports = Note;
+module.exports = People;

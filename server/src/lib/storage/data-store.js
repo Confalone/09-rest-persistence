@@ -1,8 +1,8 @@
 'use strict';
 
 // Pull in all of our possible storage modules
-const memoryStorage = require('./memory.js');
-const fileStorage = require('./filesystem.js');
+import memoryStorage from './memory.js';
+import fileStorage from './filesystem.js';
 
 let dataStorageModule = {};
 
@@ -11,13 +11,12 @@ let dataStorageModule = {};
 // This allows this application to dynamically switch out storage systems based
 // on any logic you choose
 switch( process.env.STORAGE ) {
-  case 'filesystem':
-    dataStorageModule = fileStorage;
-    break;
-  
-  default:
-    dataStorageModule = memoryStorage;
-    break;
+case 'filesystem':
+  dataStorageModule = fileStorage;
+  break;
+default:
+  dataStorageModule = memoryStorage;
+  break;
 }
 
-module.exports = dataStorageModule;
+export default dataStorageModule;
