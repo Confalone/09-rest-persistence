@@ -1,75 +1,71 @@
 'use strict';
 
-import express from 'express';
-const router = express.Router();
+const router = require('../lib/router.js');
 
-import Notes from '../models/notes.js';
 
 /**
- * Simple method to send a JSON response (all of the API methods will use this)
- * @param res
- * @param data
+ * GET Route (/)
+ * Accepts an optional "name" query string parameter and says Hello
+ * test with httpie:
+ *     http http://localhost:8080
+ *     http http://localhost:8080?name=John
  */
-let sendJSON = (res,data) => {
+router.get('/', (req,res) => {
   res.statusCode = 200;
   res.statusMessage = 'OK';
-  res.setHeader('Content-Type', 'application/json');
-  res.write( JSON.stringify(data) );
+
+  let name = req.query.name || '';
+  res.write(`Hello ${name}`);
   res.end();
-};
+});
 
-/**
- * Send a formatted (JSON) error the user in case of catastrophe
- * @param res
- * @param err
- */
-let serverError = (res,err) => {
-  let error = { error:err };
-  res.statusCode = 500;
-  res.statusMessage = 'Server Error';
-  res.setHeader('Content-Type', 'application/json');
-  res.write( JSON.stringify(error) );
+router.get('/api/v1/puppys', (req, res) => {
+  
+  const id = req.query.id;
+  
+  if(id) {
+    res.statusCode = 200;
+    res.write(`ID: ${id}`);
+  } else {
+    res.statusCode = 400;
+    res.write('Sorry go that way');
+  }
   res.end();
-};
-
-router.get('/api/v1/notes', (req,res) => {
-  Notes.fetchAll()
-    .then( data => sendJSON(res,data) )
-    .catch( err => serverError(res,err) );
 });
 
-// Note the split of the fetchAll and fetchOne type of routes
-// into one that takes an id route param and one that does not
-router.get('/api/v1/notes/:id', (req,res) => {
-  if ( req.params.id ) {
-    Notes.findOne(req.params.id)
-      .then(data => sendJSON(res, data))
-      .catch(err => serverError(res, err));
+router.post('/api/v1/puppys', (req, res) => {
+  res.statusCode = 200;
+  res.statusMessage = 'OK';
+  res.write(JSON.stringify(req.body));
+  res.end();
+});
+
+router.put('/api/v1/puppys', (req, res) => {  
+  const id = req.url.query.id;
+  
+  if(id) {
+    res.statusCode = 200;
+    res.statusMessage = 'OK';
+    res.write(JSON.stringify(req.body));
+  } else {
+    res.statusCode = 400;
+    res.write('Sorry go that way');
   }
-  else {
-    Notes.fetchAll()
-      .then(data => sendJSON(res,data))
-      .catch(err => serverError(res,err));
+  res.end();
+});
+
+router.delete('/api/v1/puppys', (req, res) => {  
+  const id = req.query.id;
+  
+  if(id) {
+    res.statusCode = 200;
+    res.statusMessage = 'OK';
+    res.write(`ID: ${id} has been deleted, thank you.`);
+  } else {
+    res.statusCode = 400;
+    res.write('Sorry, nothing was deleted.');
   }
+  res.end();
 });
 
-router.delete('/api/v2/notes', (req,res) => {
-  if (req.query.id) {
-    Notes.deleteOne(req.query.id)
-      .then(success => {
-        let data = ({id:req.query.id,deleted:success});
-        sendJSON(res,data);
-      });
-  }
-});
-
-router.post('/api/v1/notes', (req,res) => {
-  let record = new Notes(req.body);
-  record.save()
-    .then(data => sendJSON(res,data))
-    .catch(console.error);
-
-});
-
-// ES6, FTW! Export this the cool way
-export default router;
+module.exports = {};
